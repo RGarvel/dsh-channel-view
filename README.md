@@ -50,7 +50,16 @@ cordis.patch.yml  bundle 层 patch：插入 channel-view-spike 行
 - tab 注入锚定依赖「工作区/Workspaces」文案与 `regionArea` 类名前缀（css-modules 键名），宿主 UI 大改时失效——正式版若上游接受 RFC，应改为官方 tab 槽；
 - 不发布 npm，仅 file: 依赖本地验证。
 
-规范背景：[RGarvel/dsh-channel-spec](https://github.com/RGarvel/dsh-channel-spec)（RFC-0001，源自 deepseek-harness discussion #3897）。
+## 与 dsh-channel-spec 的关系
+
+[RGarvel/dsh-channel-spec](https://github.com/RGarvel/dsh-channel-spec)（RFC-0001，源自 [deepseek-harness#3897](https://github.com/deepseek-ai/deepseek-harness/discussions/3897)）是本功能的**规范载体**，两库分工：
+
+| 库 | 角色 | 回答的问题 |
+|---|---|---|
+| `dsh-channel-spec` | RFC 规范（纯文档） | 渠道**应该**长什么样：宿主原生 `session.header.channel` 字段 + 官方 GUI 渠道视图 |
+| `dsh-channel-view`（本库） | 参考实现（spike，纯第三方插件形态） | **不改宿主**能做到什么程度：插槽 + 会话投影 + portal 注入的链路实证 |
+
+演进契约：RFC 被上游采纳/实现后，本库的 DOM 注入部分应迁往官方槽位、库降级为参考实现存档（spec 的 Related 与本节保持互链）；RFC 未决期间本库继续以插件形态演进（下一步：dsh-qqbot peer-map → 真渠道投影）。
 
 ## License
 
