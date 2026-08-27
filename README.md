@@ -1,4 +1,4 @@
-# @rgarvel/dsh-channel-view（spike → v2.2 渠道 tab）
+# dsh-channel-view（spike → v2.2 渠道 tab）
 
 > A **zero-host-modification** plugin for DeepSeek Harness: injects a parallel `Channels` tab beside the sidebar's "工作区" header and groups every session by declared channel — powered entirely by official extension surfaces (bundle client module, `sidebar.footer.action` slot, session projections, react-dom portal). 不改一行宿主的 DSH 渠道会话视图插件：侧栏「工作区」旁注入平行 Channels tab，按渠道分组全部会话，全程只用官方扩展面。
 
@@ -34,11 +34,15 @@ cordis.patch.yml  bundle 层 patch：插入 channel-view-spike 行
 
 ## 安装（profile 为 web 时）
 
+**registry 安装（npm）**：
+
 1. `~/.dsh/profiles/web/package.json`：
-   - `dependencies` 加 `"@rgarvel/dsh-channel-view": "file:<本地克隆路径>"`（如 `file:D:/dsh-channel-view`）；
-   - `dsh.profile.bundles` 数组加 `"@rgarvel/dsh-channel-view"`；
-2. `npm install --prefix ~/.dsh/profiles/web`；
-3. 重启 `dsh web`（仅宿主入口 lib/index.js 改动需要；**纯客户端改动浏览器刷新即生效**）。
+   - `dependencies` 加 `"dsh-channel-view": "^0.0.1-spike.2"`；
+   - `dsh.profile.bundles` 数组在 `@deepseek-ai/dsh-web-app` 之后加 `"dsh-channel-view"`；
+2. `npm install --prefix ~/.dsh/profiles/web`（或 `dsh plugin --profile web add dsh-channel-view`）；
+3. 重启 `dsh web`。
+
+**开发模式（file: 克隆）**：`dependencies` 用 `"dsh-channel-view": "file:<本地克隆路径>"`，其余同上；纯客户端改动浏览器刷新即生效（宿主入口改动才需重启）。
 
 ## 诊断
 
@@ -50,7 +54,7 @@ cordis.patch.yml  bundle 层 patch：插入 channel-view-spike 行
 
 - 渠道值为 spike latch，非真实渠道（见上）；
 - tab 注入锚定依赖「工作区/Workspaces」文案与 `regionArea` 类名前缀（css-modules 键名），宿主 UI 大改时失效——正式版若上游接受 RFC，应改为官方 tab 槽；
-- 不发布 npm，仅 file: 依赖本地验证。
+- `0.0.x-spike` 版本线：接口与形态可能随 RFC 进展变动，生产采用请锁版本。
 
 ## 与 dsh-channel-spec 的关系
 

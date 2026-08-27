@@ -7,4 +7,4 @@
 
 - insert:
     - id: channel-view-spike
-      name: '@rgarvel/dsh-channel-view'
+      name: 'dsh-channel-view'
