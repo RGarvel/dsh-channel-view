@@ -19,7 +19,17 @@
     }
   },
   "keywords": [
-    "dsh-plugin"
+    "dsh-plugin",
+    "dsh",
+    "deepseek-harness",
+    "channel-view",
+    "sessions",
+    "sidebar"
+  ],
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md"
   ],
   "license": "MIT",
   "repository": {

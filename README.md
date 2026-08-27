@@ -1,5 +1,7 @@
 # @rgarvel/dsh-channel-view（spike → v2.2 渠道 tab）
 
+> A **zero-host-modification** plugin for DeepSeek Harness: injects a parallel `Channels` tab beside the sidebar's "工作区" header and groups every session by declared channel — powered entirely by official extension surfaces (bundle client module, `sidebar.footer.action` slot, session projections, react-dom portal). 不改一行宿主的 DSH 渠道会话视图插件：侧栏「工作区」旁注入平行 Channels tab，按渠道分组全部会话，全程只用官方扩展面。
+
 DSH「渠道会话视图」原型。**spike 三问已全部验证通过（2026-08-27 实测 CHAIN ALIVE ✔）**：
 
 | # | 扩展面 | 结果 |
