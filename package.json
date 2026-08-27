@@ -1,0 +1,29 @@
+{
+  "name": "@rgarvel/dsh-channel-view",
+  "version": "0.0.1-spike.2",
+  "description": "Spike: channel-grouped session view for DeepSeek Harness — sidebar tab injection + session-projection data path (RFC dsh-channel-spec)",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [],
+      "platform": "web"
+    }
+  },
+  "keywords": [
+    "dsh-plugin"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RGarvel/dsh-channel-view"
+  }
+}

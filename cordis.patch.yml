@@ -1,0 +1,10 @@
+# dsh-channel-view bundle patch (spike)
+#
+# 插入宿主行：注册 `channelSpike` 会话投影单元，验证
+# 「插件投影 → session/projection 推送帧 → 客户端 projectionValues」链路。
+#
+# 叠加顺序：dsh-base → 本 bundle patch → profile cordis.patch.yml → --patch
+
+- insert:
+    - id: channel-view-spike
+      name: '@rgarvel/dsh-channel-view'
