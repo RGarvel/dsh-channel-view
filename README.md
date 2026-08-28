@@ -31,8 +31,8 @@ v2 从"面板演示"进入"平行 tab 形态"：
 - **兜底**：锚定失败（结构/文案变化）或 `react-dom` 缺失 → 自动退化为 footer 浮层入口（浮层头部有 `portal ✓/✘` 状态）。
 - **v2.4 折叠（rail）态收束**：宿主侧边栏折叠时——
   - tab 对与 Channels 列表整体退出（不再把渠道子目录留在折叠栏里）；
-  - 往折叠态仍存在的 `sectionHeader` 首位注入**单个「两 tab 堆叠」图标**（28px 圆底、`currentColor` 描边，与 rail 官方图标同观感）：上下两枚圆角矩形代表「工作区 / Channels」两 tab 收拢；点击 = 展开宿主侧栏（转发到宿主 toggle 按钮）并恢复原 tab 选择；
-  - **悬停指示点统一**：rail 图标底部中央的 4px 小圆点仅在 hover/聚焦时淡入（`.dshcv-ind::after`，`currentColor`），本图标与宿主「新建对话」「搜索」两按钮共用同一悬停语言（宿主按钮由看门狗幂等补挂 class，卸载时摘除；两 tab 的当前态改由图标亮度与展开后的 tab 呈现，不再常显圆点）；
+  - 往折叠态仍存在的 `sectionHeader` 首位注入**单个「两 tab 堆叠」图标**（36px 圆底、`currentColor` 描边，与 rail 官方图标同规格）：上下两枚圆角矩形代表「工作区 / Channels」两 tab 收拢；点击 = 展开宿主侧栏（转发到宿主 toggle 按钮）并恢复原 tab 选择；
+  - **悬停统一**：rail 三枚图标（本图标、宿主「新建对话」「搜索」）hover 观感一致——36px 圆形 + `--dsw-alias-interactive-bg-hover` 淡色底（「新建对话」原生为 12px 圆角方，经 `.dshcv-ind` 统一为圆形），并在底部中央淡入一枚 4px `currentColor` 悬停指示点（`::after`，hover/聚焦出现；「新建对话」「搜索」由看门狗幂等补挂 class，卸载摘除；两 tab 当前态不再常显圆点，改由图标亮度与展开后的 tab 呈现）；
   - 看门狗补判 `labelEl.isConnected`：官方标题在折叠/展开间整体重挂载，旧锚点子树可能孤儿存活——强制重装，修「折叠再展开出现双 tab」；
   - tab 按钮加 `whiteSpace:nowrap`，修窄栏下「工作区」逐字竖排。
 
