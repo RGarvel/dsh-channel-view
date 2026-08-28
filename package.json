@@ -1,6 +1,6 @@
 {
   "name": "dsh-channel-view",
-  "version": "0.0.1-spike.2",
+  "version": "0.0.1-spike.3",
   "description": "Spike: channel-grouped session view for DeepSeek Harness — sidebar tab injection + session-projection data path (RFC dsh-channel-spec)",
   "type": "module",
   "main": "lib/index.js",

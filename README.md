@@ -1,4 +1,4 @@
-# dsh-channel-view（spike → v2.2 渠道 tab）
+# dsh-channel-view（spike → v2.3 真实渠道）
 
 [![npm version](https://img.shields.io/npm/v/dsh-channel-view?label=dsh-channel-view)](https://www.npmjs.com/package/dsh-channel-view)
 
@@ -30,13 +30,14 @@ v2 从"面板演示"进入"平行 tab 形态"：
 - **"absent"如实化（修复②）**：读源确认宿主基线语义——attached 会话走 watermark cache 必出值；**冷会话只读持久化投影行、永不折日志**（`listProjectionsFor` 设计使然，非 bug）。分组显示为「未观测（冷/未声明）」，打开过一次后随快照落盘自动归队。
 - **兜底**：锚定失败（结构/文案变化）或 `react-dom` 缺失 → 自动退化为 footer 浮层入口（浮层头部有 `portal ✓/✘` 状态）。
 
-数据面全部走官方链路（useSessions 行 + 投影推送帧）。**渠道判定目前仍是 channelSpike latch 值**——真渠道（qq/c2c、qq/group…）需由持有权威映射的插件（如 dsh-qqbot 的 peer-map）注册投影单元声明，这是正式版的下一步；`origin` 字段值域只有 `subagent`，不能充当渠道。
+数据面全部走官方链路（useSessions 行 + 投影推送帧）。**v2.3 起支持真实渠道**：`qqChannel` 投影单元（由 [dsh-qqbot PR #39](https://github.com/tencent-connect/dsh-qqbot/pull/39) 注册——入站消息在 `source.channel` 携带 `qq/c2c`/`qq/group` 声明，单元折叠日志锁存，重放安全）命中最高优先级；`channelSpike`（本库自带的 latch 演示值）退居兜底档，标签如实标注「演示渠道」；`origin` 字段值域只有 `subagent`，不能充当渠道。
 
 ## 结构
 
 ```
-lib/index.js      宿主入口：注册 channelSpike 投影单元（观测 latch 语义）
+lib/index.js      宿主入口：注册 channelSpike 投影单元（观测 latch 语义，演示兜底档）
 lib/client.js     客户端 bundle（手写，无构建）：tab 注入 + 渠道分组视图 + 浮层兜底
+                  分组优先级：qqChannel（真实声明，dsh-qqbot 注册）> channelSpike > subagent > 未观测
 cordis.patch.yml  bundle 层 patch：插入 channel-view-spike 行
 ```
 
@@ -45,7 +46,7 @@ cordis.patch.yml  bundle 层 patch：插入 channel-view-spike 行
 **registry 安装（npm）**：
 
 1. `~/.dsh/profiles/web/package.json`：
-   - `dependencies` 加 `"dsh-channel-view": "^0.0.1-spike.2"`；
+   - `dependencies` 加 `"dsh-channel-view": "^0.0.1-spike.3"`；
    - `dsh.profile.bundles` 数组在 `@deepseek-ai/dsh-web-app` 之后加 `"dsh-channel-view"`；
 2. `npm install --prefix ~/.dsh/profiles/web`（或 `dsh plugin --profile web add dsh-channel-view`）；
 3. 重启 `dsh web`。
@@ -60,7 +61,7 @@ cordis.patch.yml  bundle 层 patch：插入 channel-view-spike 行
 
 ## 限制（当前阶段声明）
 
-- 渠道值为 spike latch，非真实渠道（见上）；
+- 真实渠道目前覆盖 QQ（`qq/c2c`/`qq/group`，需 dsh-qqbot 带 PR #39 或同构补丁）；其余宿主渠道待声明方插件注册各自的投影单元（值域约定 `<source>/<variant>`）；
 - tab 注入锚定依赖「工作区/Workspaces」文案与 `regionArea` 类名前缀（css-modules 键名），宿主 UI 大改时失效——正式版若上游接受 RFC，应改为官方 tab 槽；
 - `0.0.x-spike` 版本线：接口与形态可能随 RFC 进展变动，生产采用请锁版本。
 
@@ -73,7 +74,7 @@ cordis.patch.yml  bundle 层 patch：插入 channel-view-spike 行
 | `dsh-channel-spec` | RFC 规范（纯文档） | 渠道**应该**长什么样：宿主原生 `session.header.channel` 字段 + 官方 GUI 渠道视图 |
 | `dsh-channel-view`（本库） | 参考实现（spike，纯第三方插件形态） | **不改宿主**能做到什么程度：插槽 + 会话投影 + portal 注入的链路实证 |
 
-演进契约：RFC 被上游采纳/实现后，本库的 DOM 注入部分应迁往官方槽位、库降级为参考实现存档（spec 的 Related 与本节保持互链）；RFC 未决期间本库继续以插件形态演进（下一步：dsh-qqbot peer-map → 真渠道投影）。
+演进契约：RFC 被上游采纳/实现后，本库的 DOM 注入部分应迁往官方槽位、库降级为参考实现存档（spec 的 Related 与本节保持互链）；RFC 未决期间本库继续以插件形态演进（~~下一步：dsh-qqbot peer-map → 真渠道投影~~ **已落地：v2.3 消费 qqChannel，声明侧见 dsh-qqbot PR #39**）。
 
 ## License
 
