@@ -52,7 +52,7 @@ cordis.patch.yml  bundle 层 patch：插入 channel-view-spike 行
 **registry 安装（npm）**：
 
 1. `~/.dsh/profiles/web/package.json`：
-   - `dependencies` 加 `"dsh-channel-view": "^0.0.1-spike.4"`；
+   - `dependencies` 加 `"dsh-channel-view": "^0.0.1-spike.5"`；
    - `dsh.profile.bundles` 数组在 `@deepseek-ai/dsh-web-app` 之后加 `"dsh-channel-view"`；
 2. `npm install --prefix ~/.dsh/profiles/web`（或 `dsh plugin --profile web add dsh-channel-view`）；
 3. 重启 `dsh web`。
