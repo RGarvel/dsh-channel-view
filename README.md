@@ -28,7 +28,8 @@ v2 从"面板演示"进入"平行 tab 形态"：
   - **孤儿标注**：`row.cwd` 不在 `workspaces.items` 注册路径集合中的行（工作区已删但会话尚存）标 `（工作区已移除）`；items 形状异常时空集跳过，宁可不标不误标。
 - **运行中指示**：`row.running / isRunning / status==='running'` 任一命中 → 行左侧绿色脉冲圆点；非运行行保留同宽占位保证标题对齐。
 - **"absent"如实化（修复②）**：读源确认宿主基线语义——attached 会话走 watermark cache 必出值；**冷会话只读持久化投影行、永不折日志**（`listProjectionsFor` 设计使然，非 bug）。分组显示为「未观测（冷/未声明）」，打开过一次后随快照落盘自动归队。
-- **兜底**：锚定失败（结构/文案变化）或 `react-dom` 缺失 → 自动退化为 footer 浮层入口（浮层头部有 `portal ✓/✘` 状态）。
+- **悬停气泡统一（v2.4+）**：会话行/rail 图标的悬停提示复用宿主 `@deepseek-ai/dsh-client-ui-primitives.Tooltip`——与「新建对话」「搜索」按钮**同组件同底色**（`--dsw-alias-tooltip-bg` 深色气泡、500ms 延迟、pre-line 多行；行 hover 为 标题/cwd/id 三行）；原语缺席自动回退原生 `title`。
+- **不做不可达的兜底**：锚定失败（结构/文案变化）或 `react-dom` 缺失时**不注入任何视图**——早期版本的 footer ▦ 浮层入口在 v2.4 tab 化重构后实际已不可达，遂连同 overlay 代码一并移除，不保留形同虚设的降级；footer 插槽仅剩「sessions hook 缺席」诊断标记。
 - **v2.4 折叠（rail）态收束**：宿主侧边栏折叠时——
   - tab 对与 Channels 列表整体退出（不再把渠道子目录留在折叠栏里）；
   - 往折叠态仍存在的 `sectionHeader` 首位注入**单个「两 tab 堆叠」图标**（36px 圆底、`currentColor` 描边，与 rail 官方图标同规格）：上下两枚圆角矩形代表「工作区 / Channels」两 tab 收拢；点击 = 展开宿主侧栏（转发到宿主 toggle 按钮）并恢复原 tab 选择；
@@ -42,7 +43,7 @@ v2 从"面板演示"进入"平行 tab 形态"：
 
 ```
 lib/index.js      宿主入口：注册 channelSpike 投影单元（观测 latch 语义，演示兜底档）
-lib/client.js     客户端 bundle（手写，无构建）：tab 注入 + 渠道分组视图 + 浮层兜底
+lib/client.js     客户端 bundle（手写，无构建）：tab 注入 + 渠道分组视图 + rail 折叠图标
                   分组优先级：qqChannel（真实声明，dsh-qqbot 注册）> channelSpike > subagent > 未观测
 cordis.patch.yml  bundle 层 patch：插入 channel-view-spike 行
 ```
@@ -61,7 +62,7 @@ cordis.patch.yml  bundle 层 patch：插入 channel-view-spike 行
 
 ## 诊断
 
-- **tab 不出现且浮层 `portal ✘`** → react-dom 播种缺失或锚点文案变化，浮层仍可用；
+- **tab 不出现** → react-dom 播种缺失或锚点文案/结构变化（无注入即无视图，不再有浮层可退；排查 DOM 锚点：文本恰为「工作区/Workspaces」的元素）；
 - **tab 出现但 Channels 里全是"未观测"** → 投影单元未注册/未推送（查宿主启动日志 `[dsh-channel-view]` 行）；
 - 看门狗每 2s 检查注入节点存活性（React 重渲染冲掉时自动重装）。
 
