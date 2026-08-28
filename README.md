@@ -1,4 +1,4 @@
-# dsh-channel-view（spike → v2.3 真实渠道）
+# dsh-channel-view（spike → v2.4 折叠收束）
 
 [![npm version](https://img.shields.io/npm/v/dsh-channel-view?label=dsh-channel-view)](https://www.npmjs.com/package/dsh-channel-view)
 
@@ -29,6 +29,11 @@ v2 从"面板演示"进入"平行 tab 形态"：
 - **运行中指示**：`row.running / isRunning / status==='running'` 任一命中 → 行左侧绿色脉冲圆点；非运行行保留同宽占位保证标题对齐。
 - **"absent"如实化（修复②）**：读源确认宿主基线语义——attached 会话走 watermark cache 必出值；**冷会话只读持久化投影行、永不折日志**（`listProjectionsFor` 设计使然，非 bug）。分组显示为「未观测（冷/未声明）」，打开过一次后随快照落盘自动归队。
 - **兜底**：锚定失败（结构/文案变化）或 `react-dom` 缺失 → 自动退化为 footer 浮层入口（浮层头部有 `portal ✓/✘` 状态）。
+- **v2.4 折叠（rail）态收束**：宿主侧边栏折叠时——
+  - tab 对与 Channels 列表整体退出（不再把渠道子目录留在折叠栏里）；
+  - 往折叠态仍存在的 `sectionHeader` 首位注入**单个「两 tab 堆叠」图标**（28px 圆底、`currentColor` 描边，与 rail 官方图标同观感）：上下两枚圆角矩形代表「工作区 / Channels」两 tab 收拢，当前停在 Channels 时右下出现实心点；点击 = 展开宿主侧栏（转发到宿主 toggle 按钮）并恢复原 tab 选择；
+  - 看门狗补判 `labelEl.isConnected`：官方标题在折叠/展开间整体重挂载，旧锚点子树可能孤儿存活——强制重装，修「折叠再展开出现双 tab」；
+  - tab 按钮加 `whiteSpace:nowrap`，修窄栏下「工作区」逐字竖排。
 
 数据面全部走官方链路（useSessions 行 + 投影推送帧）。**v2.3 起支持真实渠道**：`qqChannel` 投影单元（由 [dsh-qqbot PR #39](https://github.com/tencent-connect/dsh-qqbot/pull/39) 注册——入站消息在 `source.channel` 携带 `qq/c2c`/`qq/group` 声明，单元折叠日志锁存，重放安全）命中最高优先级；`channelSpike`（本库自带的 latch 演示值）退居兜底档，标签如实标注「演示渠道」；`origin` 字段值域只有 `subagent`，不能充当渠道。
 
@@ -46,7 +51,7 @@ cordis.patch.yml  bundle 层 patch：插入 channel-view-spike 行
 **registry 安装（npm）**：
 
 1. `~/.dsh/profiles/web/package.json`：
-   - `dependencies` 加 `"dsh-channel-view": "^0.0.1-spike.3"`；
+   - `dependencies` 加 `"dsh-channel-view": "^0.0.1-spike.4"`；
    - `dsh.profile.bundles` 数组在 `@deepseek-ai/dsh-web-app` 之后加 `"dsh-channel-view"`；
 2. `npm install --prefix ~/.dsh/profiles/web`（或 `dsh plugin --profile web add dsh-channel-view`）；
 3. 重启 `dsh web`。
@@ -62,7 +67,7 @@ cordis.patch.yml  bundle 层 patch：插入 channel-view-spike 行
 ## 限制（当前阶段声明）
 
 - 真实渠道目前覆盖 QQ（`qq/c2c`/`qq/group`，需 dsh-qqbot 带 PR #39 或同构补丁）；其余宿主渠道待声明方插件注册各自的投影单元（值域约定 `<source>/<variant>`）；
-- tab 注入锚定依赖「工作区/Workspaces」文案与 `regionArea` 类名前缀（css-modules 键名），宿主 UI 大改时失效——正式版若上游接受 RFC，应改为官方 tab 槽；
+- tab 注入锚定依赖「工作区/Workspaces」文案与 `regionArea`/`sectionHeader` 类名前缀（css-modules 键名），rail 图标同样锚在 `sectionHeader` 首位并点击转发到 `button[class*="_toggle"]`（有 aria-label「展开侧边栏/Expand sidebar」兜底），宿主 UI 大改时失效——正式版若上游接受 RFC，应改为官方 tab 槽；
 - `0.0.x-spike` 版本线：接口与形态可能随 RFC 进展变动，生产采用请锁版本。
 
 ## 与 dsh-channel-spec 的关系
