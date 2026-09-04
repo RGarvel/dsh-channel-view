@@ -1,4 +1,4 @@
-# dsh-channel-view（spike → v2.4 折叠收束）
+# dsh-channel-view（spike → v2.5 权威状态路由 + 使用中角标）
 
 [![npm version](https://img.shields.io/npm/v/dsh-channel-view?label=dsh-channel-view)](https://www.npmjs.com/package/dsh-channel-view)
 
@@ -36,13 +36,19 @@ v2 从"面板演示"进入"平行 tab 形态"：
   - **悬停统一**：rail 三枚图标（本图标、宿主「新建对话」「搜索」）hover 观感一致——36px 圆形 + `--dsw-alias-interactive-bg-hover` 淡色底（「新建对话」原生为 12px 圆角方，经 `.dshcv-ind` 统一为圆形），并在底部中央淡入一枚 4px `currentColor` 悬停指示点（`::after`，hover/聚焦出现；「新建对话」「搜索」由看门狗幂等补挂 class，卸载摘除；两 tab 当前态不再常显圆点，改由图标亮度与展开后的 tab 呈现）；
   - 看门狗补判 `labelEl.isConnected`：官方标题在折叠/展开间整体重挂载，旧锚点子树可能孤儿存活——强制重装，修「折叠再展开出现双 tab」；
   - tab 按钮加 `whiteSpace:nowrap`，修窄栏下「工作区」逐字竖排。
+- **v2.5 权威状态路由 + 「使用中」角标 + live 丢锁存规避**：
+  - 宿主入口新增只读 HTTP 路由 `/dsh-channel-view/state`（官方 `ctx.webServer.register` seam，exact 路径，`cache-control: no-store`），返回 `{channels:{sessionId→qqChannel}, bound:[当前绑定会话id], generatedAt}`：channel 值取 `sessionProjectionCache.cachedSnapshot`（冷/持久）∪ 自建 `onChanged` live overlay（本进程新锁存），qqbot 绑定集取 `~/.dsh-qqbot/model-prefs.json` 的 `sessionIds` 覆盖值 ∪ `session-peers.json` 键；
+  - **规避的 core 缺陷**：QQ 会话在 web 端被直接对话转为 live 后，客户端 dsh-client-runtime 的行 `projectionValues` 会被 core 以只含内置键的 `projectionValuesOf(log)` 重算——插件单元（`qqChannel`）锁存值不在其中、且 latches 时的推送帧早于浏览器连接、不会再补发 → 该会话从 Channels 的 QQ 组掉进「未观测」（宿主 `session.list` 出口实测无误，纯客户端 live 行装配漏并插件单元）。分组判定改为**权威路由值优先、行投影值兜底**，绕开该路径；路由缺席（旧宿主/重启前）自动退回纯行值，行为不劣于 v2.4；
+  - **使用中角标**：`bound` 命中的行右侧渲染绿色「使用中」小徽标（悬停提示「当前 QQ 绑定的会话」），区分「正服务」与「曾服务」——归档组不显示；
+  - 客户端每 4s 轮询该路由（仅 Channels 视图挂载期间）。轮询是 spike 级取巧，正式版应由宿主在绑定变更时推帧。
+  - ⚠️ 该路由暴露会话 id 与绑定关系，与 `/api` 同等假定本机可信；宿主绑 `0.0.0.0` 时同局域网可读（spike 阶段如实声明，正式版需鉴权）。
 
-数据面全部走官方链路（useSessions 行 + 投影推送帧）。**v2.3 起支持真实渠道**：`qqChannel` 投影单元（由 [dsh-qqbot PR #39](https://github.com/tencent-connect/dsh-qqbot/pull/39) 注册——入站消息在 `source.channel` 携带 `qq/c2c`/`qq/group` 声明，单元折叠日志锁存，重放安全）命中最高优先级；`channelSpike`（本库自带的 latch 演示值）退居兜底档，标签如实标注「演示渠道」；`origin` 字段值域只有 `subagent`，不能充当渠道。
+数据面主体走官方链路（useSessions 行 + 投影推送帧；v2.5 起 qqChannel 判定加一条宿主权威路由，见上）。**v2.3 起支持真实渠道**：`qqChannel` 投影单元（由 [dsh-qqbot PR #39](https://github.com/tencent-connect/dsh-qqbot/pull/39) 注册——入站消息在 `source.channel` 携带 `qq/c2c`/`qq/group` 声明，单元折叠日志锁存，重放安全）命中最高优先级；`channelSpike`（本库自带的 latch 演示值）退居兜底档，标签如实标注「演示渠道」；`origin` 字段值域只有 `subagent`，不能充当渠道。
 
 ## 结构
 
 ```
-lib/index.js      宿主入口：注册 channelSpike 投影单元（观测 latch 语义，演示兜底档）
+lib/index.js      宿主入口：channelSpike 投影单元 + onChanged live overlay + /dsh-channel-view/state 权威路由（v2.5）
 lib/client.js     客户端 bundle（手写，无构建）：tab 注入 + 渠道分组视图 + rail 折叠图标
                   分组优先级：qqChannel（真实声明，dsh-qqbot 注册）> channelSpike > subagent > 未观测
 cordis.patch.yml  bundle 层 patch：插入 channel-view-spike 行
@@ -53,7 +59,7 @@ cordis.patch.yml  bundle 层 patch：插入 channel-view-spike 行
 **registry 安装（npm）**：
 
 1. `~/.dsh/profiles/web/package.json`：
-   - `dependencies` 加 `"dsh-channel-view": "^0.0.1-spike.5"`；
+   - `dependencies` 加 `"dsh-channel-view": "^0.0.1-spike.6"`；
    - `dsh.profile.bundles` 数组在 `@deepseek-ai/dsh-web-app` 之后加 `"dsh-channel-view"`；
 2. `npm install --prefix ~/.dsh/profiles/web`（或 `dsh plugin --profile web add dsh-channel-view`）；
 3. 重启 `dsh web`。
@@ -64,6 +70,7 @@ cordis.patch.yml  bundle 层 patch：插入 channel-view-spike 行
 
 - **tab 不出现** → react-dom 播种缺失或锚点文案/结构变化（无注入即无视图，不再有浮层可退；排查 DOM 锚点：文本恰为「工作区/Workspaces」的元素）；
 - **tab 出现但 Channels 里全是"未观测"** → 投影单元未注册/未推送（查宿主启动日志 `[dsh-channel-view]` 行）；
+- **没有「使用中」角标 / web 对话的 QQ 会话仍掉出分组** → 权威路由未生效（宿主入口改动**不热载**，需重启 dsh web 后再刷新浏览器；`curl http://127.0.0.1:<port>/dsh-channel-view/state` 应返回 JSON）；
 - 看门狗每 2s 检查注入节点存活性（React 重渲染冲掉时自动重装）。
 
 ## 限制（当前阶段声明）
