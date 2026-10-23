@@ -8,7 +8,9 @@
 
 | 工作区常态 | Channels 激活态（分组 + 脉冲点 + 归档折叠组） |
 |---|---|
-| ![tab-normal](docs/tab-normal.png) | ![channels-active](docs/channels-active.png) |
+| ![工作区常态（会话名已遮蔽）](https://raw.githubusercontent.com/RGarvel/dsh-channel-view/main/docs/tab-normal.png) | ![Channels 激活态（会话名已遮蔽）](https://raw.githubusercontent.com/RGarvel/dsh-channel-view/main/docs/channels-active.png) |
+
+> 上表为**抹名版**截图：真实工作区与会话名已遮蔽，分组结构 / 脉冲点 / 归档折叠组保持原样。图片用绝对 URL，GitHub 与 npm 两处页面都不依赖相对路径解析。净化 demo 环境的正式截图待替换。
 
 DSH「渠道会话视图」原型。**spike 三问已全部验证通过（2026-08-27 实测 CHAIN ALIVE ✔）**：
 
